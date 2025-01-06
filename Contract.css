@@ -1,0 +1,140 @@
+*{
+    font-family:sans-serif;
+}
+#parent-component{
+    background-color: whitesmoke;
+    height: 100%;
+    /* width: 100%; */
+    margin: 10px 10px;
+    padding: 4px 8px;
+}
+#main-heading{
+    display: flex;
+    align-items: center;
+    justify-content:space-between
+}
+#sub-main-heading{
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   gap: 10px;
+   margin: 10px 10px;
+}
+#sub-main-heading-pOne{
+    font-size: 22px;
+    font-weight: bold;
+    font-family: system-ui;
+}
+#sub-main-heading-pTwo{
+    border-radius: 20px;
+    background-color: black;
+    color: white;
+    padding:2px 3px;
+}
+#sub-main-heading-buttonOne{
+    padding: 8px 17px;
+    background-color: darkgreen;
+    color: white;
+    border-radius: 8px;
+    font-weight: bolder;
+}
+#card-body-opt{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+}
+#sub-parent-component-One{
+    margin: 10px 10px;
+    display: flex;
+    align-items: center;
+    justify-content:space-evenly;
+}
+
+#sub-parent-component-Two{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    margin: 30px 10px;
+    gap: 30px;
+}
+#sub-parent-component-Two-span-One{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    gap: 12px;
+}
+#sub-parent-component-Two-span-Two{
+    background-color: rgb(225, 223, 223);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 4px;
+    gap: 12px;
+}
+#sub-parent-component-Two-span-p{
+    color:grey;
+    font-weight: bold;
+}
+#table{
+    border-collapse: collapse;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    }
+#table-th-td{
+    /* background-color: white; */
+    border: 3px solid rgb(225, 223, 223);
+    padding: 10px 20px;
+    font-family: cursive;
+    font-weight: bold;
+    margin: 2px 30px;
+    }
+#table-th-td-img{
+    width: 2rem;
+    height: 2rem; 
+    border-radius: 50%; 
+    object-fit: cover;
+    margin: 0px 13px;
+}
+#table-th-td-btn-green{
+    border-radius: 10%;
+    padding: 2px 6px;
+    color: white;
+    background-color:  #279d27;
+    border: none;
+}
+#table-th-td-btn-orange{
+    border-radius: 10%;
+    padding: 2px 6px;
+    color: white;
+    background-color:  orange;
+    border: none;
+}
+#table-th-td-btn-red{
+    border-radius: 10%;
+    padding: 2px 6px;
+    color: white;
+    background-color:  red;
+    border: none;
+}
+#table-th-td-btn-grey{
+    border-radius: 10%;
+    padding: 2px 6px;
+    color: white;
+    background-color:  grey;
+    border: none;
+}
+#table-th-td-span{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#table-th-td-span-date{
+    color: grey;
+    font-weight: lighter;
+}

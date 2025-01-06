@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Settings</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        .settings-card {
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        .settings-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .settings-body {
+            padding: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .form-switch {
+            padding-left: 2.5rem;
+        }
+
+        .form-switch .form-check-input {
+            width: 3rem;
+            height: 1.5rem;
+            margin-left: -2.5rem;
+        }
+
+        .form-check-input:checked {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+            transition: background-color 0.2s;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .device-session {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .device-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+
+        .device-icon i {
+            color: #0d6efd;
+            font-size: 1.2rem;
+        }
+
+        .badge-device {
+            font-size: 0.75rem;
+            padding: 0.25em 0.75em;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <h2 class="mb-4">Settings</h2>
+
+        <!-- Account Settings -->
+        <div class="card settings-card">
+            <div class="settings-header">
+                <h5 class="mb-0">Account Settings</h5>
+            </div>
+            <div class="settings-body">
+                <form>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-control" value="rupali.sharma@company.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" value="+91 98765 43210">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+        <!-- Security Settings -->
+        <div class="card settings-card">
+            <div class="settings-header">
+                <h5 class="mb-0">Security Settings</h5>
+            </div>
+            <div class="settings-body">
+                <div class="mb-4">
+                    <h6>Two-Factor Authentication</h6>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="2fa">
+                        <label class="form-check-label" for="2fa">Enable 2FA for added security</label>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <h6>Devices</h6>
+                    <div class="device-session">
+                        <div class="device-icon">
+                            <i class="ti ti-device-laptop"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-500">Windows PC - Chrome</div>
+                                    <small class="text-muted">Last active: 2 minutes ago</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="device-session">
+                        <div class="device-icon">
+                            <i class="ti ti-device-mobile"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="fw-500">iPhone 12 - Safari</div>
+                                    <small class="text-muted">Last active: 1 hour ago</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

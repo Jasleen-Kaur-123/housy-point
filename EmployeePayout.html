@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Payout</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        .stat-card {
+            border-left: 4px solid;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card.earnings { border-color: #28a745; }
+        .stat-card.pending { border-color: #ffc107; }
+        .stat-card.bonus { border-color: #17a2b8; }
+        .stat-card.total { border-color: #6f42c1; }
+
+        .transaction-card {
+            transition: transform 0.2s;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+        }
+
+        .transaction-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .badge {
+            padding: 0.5em 0.8em;
+            font-weight: 500;
+        }
+
+        .table th {
+            font-weight: 500;
+            color: #666;
+        }
+
+        .table td {
+            vertical-align: middle;
+        }
+
+        .payment-method-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .payment-method-badge i {
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Payout Dashboard</h2>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Payment Method</h5>
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="ti ti-edit me-2"></i>Edit
+                            </button>
+                        </div>
+                        <div class="payment-method-badge">
+                            <i class="ti ti-building-bank"></i>
+                            HDFC Bank - XXXX4589 (Primary)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-4">Transaction History</h5>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Transaction ID</th>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#TRX001</td>
+                                <td>20 Feb 2024</td>
+                                <td>Salary</td>
+                                <td>xxxx</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-light">
+                                        <i class="ti ti-download"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#TRX002</td>
+                                <td>15 Feb 2024</td>
+                                <td>Bonus</td>
+                                <td>xxxx</td>
+                                <td><span class="badge bg-warning">Processing</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-light">
+                                        <i class="ti ti-download"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#TRX003</td>
+                                <td>20 Jan 2024</td>
+                                <td>Salary</td>
+                                <td>xxxx</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-light">
+                                        <i class="ti ti-download"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

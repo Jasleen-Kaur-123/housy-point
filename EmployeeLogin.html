@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Login Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        /* Card Styles */
+        .stat-card {
+            border-left: 4px solid;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card.active { border-color: #28a745; }
+        .stat-card.pending { border-color: #ffc107; }
+        .stat-card.expired { border-color: #dc3545; }
+        .stat-card.draft { border-color: #6c757d; }
+
+        /* Avatar and Profile Styles */
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Calendar Styles */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .calendar-grid span {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            border-radius: 100%;
+            padding: 4px;
+            position: relative;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .calendar-grid span:hover {
+            transform: scale(1.1);
+            z-index: 1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .calendar-grid span.present {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .calendar-grid span.absent {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .calendar-grid span.late {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .calendar-grid span.holiday {
+            background-color: #f8f9fa;
+            color: #dc3545;
+            font-weight: 500;
+        }
+
+        .calendar-grid span.current-day {
+            border: 2px solid #0d6efd;
+            font-weight: bold;
+        }
+
+        .calendar-grid span[data-time]::after {
+            content: attr(data-time);
+            position: absolute;
+            bottom: 5px;
+            font-size: 0.7rem;
+            color: #666;
+        }
+
+        /* Calendar Legend */
+        .calendar-legend .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+            display: inline-block;
+        }
+
+        .dot.present { background-color: #d4edda; }
+        .dot.absent { background-color: #f8d7da; }
+        .dot.late { background-color: #fff3cd; }
+        .dot.holiday { background-color: #cce5ff; }
+
+        /* Month Selector */
+        .month-selector {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .month-selector button {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .month-selector button:hover {
+            color: #0d6efd;
+        }
+
+        /* Attendance Summary */
+        .attendance-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .summary-item {
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 6px;
+            background: white;
+        }
+
+        .summary-item h3 {
+            font-size: 1.5rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Today's Status */
+        .today-status {
+            border-left: 4px solid #28a745;
+        }
+
+        .today-status p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Add to your existing styles */
+        .month-year-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .month-display {
+            font-weight: 500;
+            color: #333;
+            text-align: center;
+        }
+
+        .year-select {
+            border: none;
+            background: transparent;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            padding: 2px 20px 2px 10px;
+        }
+
+        .year-select:focus {
+            box-shadow: none;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Main Content -->
+            <div class="col py-3">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Employee Login Dashboard</h2>
+                    <div class="dropdown">
+                        <button class="btn btn-light" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar me-2">
+                                    <i class="ti ti-user"></i>
+                                </div>
+                                <h6 class="mb-0">Rupali Sharma</h6>
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="#"><i class="ti ti-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="ti ti-settings me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#"><i class="ti ti-logout me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card stat-card active">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Weekly Time</h6>
+                                <h2 class="card-title mb-0">265</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card pending">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Penalty</h6>
+                                <h2 class="card-title mb-0">42</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card expired">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Holiday</h6>
+                                <h2 class="card-title mb-0">12</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="EmployeeLeavesQuota.html" class="text-decoration-none">
+                            <div class="card stat-card draft" style="cursor: pointer;">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">Leaves Quota</h6>
+                                    <h2 class="card-title mb-0">22</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="row mb-4">
+                    <div class="col">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="ti ti-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-outline-secondary">
+                            <i class="ti ti-filter"></i> Filter
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Add this after the search and filter section -->
+                <div class="row">
+                    <div class="col-md-8" style="display: flex;flex-direction: column;gap: 10px;">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-4">Contract Details</h5>
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="contract-info p-3 rounded bg-light">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="ti ti-calendar text-primary me-2"></i>
+                                                <h6 class="mb-0">Contract Period</h6>
+                                            </div>
+                                            <p class="mb-1">Start Date: <strong>01 Jan 2024</strong></p>
+                                            <p class="mb-0">End Date: <strong>31 Dec 2024</strong></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="contract-info p-3 rounded bg-light">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="ti ti-clock text-primary me-2"></i>
+                                                <h6 class="mb-0">Working Hours</h6>
+                                            </div>
+                                            <p class="mb-1">Daily: <strong>9:00 AM - 6:00 PM</strong></p>
+                                            <p class="mb-0">Weekly: <strong>40 Hours</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-4">Contract Details</h5>
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="contract-info p-3 rounded bg-light">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="ti ti-calendar text-primary me-2"></i>
+                                                <h6 class="mb-0">Contract Period</h6>
+                                            </div>
+                                            <p class="mb-1">Start Date: <strong>01 Jan 2024</strong></p>
+                                            <p class="mb-0">End Date: <strong>31 Dec 2024</strong></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="contract-info p-3 rounded bg-light">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="ti ti-clock text-primary me-2"></i>
+                                                <h6 class="mb-0">Working Hours</h6>
+                                            </div>
+                                            <p class="mb-1">Daily: <strong>9:00 AM - 6:00 PM</strong></p>
+                                            <p class="mb-0">Weekly: <strong>40 Hours</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title mb-4">Contract Details</h5>
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="contract-info p-3 rounded bg-light">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="ti ti-calendar text-primary me-2"></i>
+                                                <h6 class="mb-0">Contract Period</h6>
+                                            </div>
+                                            <p class="mb-1">Start Date: <strong>01 Jan 2024</strong></p>
+                                            <p class="mb-0">End Date: <strong>31 Dec 2024</strong></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="contract-info p-3 rounded bg-light">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <i class="ti ti-clock text-primary me-2"></i>
+                                                <h6 class="mb-0">Working Hours</h6>
+                                            </div>
+                                            <p class="mb-1">Daily: <strong>9:00 AM - 6:00 PM</strong></p>
+                                            <p class="mb-0">Weekly: <strong>40 Hours</strong></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h5 class="card-title mb-0">Attendance Calendar</h5>
+                                    <div class="month-selector d-flex align-items-center">
+                                        <button class="btn btn-link text-decoration-none p-0 me-3">
+                                            <i class="ti ti-chevron-left"></i>
+                                        </button>
+                                        <div class="month-year-display">
+                                            <span class="month-display" style="width: 100px; display: inline-block;">February</span>
+                                            <select class="year-select form-select-sm" style="width: 90px; display: inline-block;">
+                                                <option value="2019">2019</option>
+                                                <option value="2020">2020</option>
+                                                <option value="2021">2021</option>
+                                                <option value="2022">2022</option>
+                                                <option value="2023">2023</option>
+                                                <option value="2024" selected>2024</option>
+                                                <option value="2025">2025</option>
+                                                <option value="2026">2026</option>
+                                            </select>
+                                        </div>
+                                        <button class="btn btn-link text-decoration-none p-0 ms-3">
+                                            <i class="ti ti-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Attendance Summary -->
+                                <div class="attendance-summary mb-4">
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="summary-item">
+                                                <small class="text-muted">Present Days</small>
+                                                <h3 class="mb-0 text-success">18</h3>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="summary-item">
+                                                <small class="text-muted">Absent Days</small>
+                                                <h3 class="mb-0 text-danger">2</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mini-calendar" style="height: 50vh;">
+
+                                    <div class="calendar-row days-header" style="display: flex;
+                                        align-items: center;
+                                        justify-content: space-around;">
+                                        <span class="text-danger">Sun</span>
+                                        <span>Mon</span>
+                                        <span>Tue</span>
+                                        <span>Wed</span>
+                                        <span>Thu</span>
+                                        <span>Fri</span>
+                                        <span>Sat</span>
+                                    </div>
+                                    
+                                    <div class="calendar-grid">
+                                        <!-- Week 1 -->
+                                        <span class="text-muted">28</span>
+                                        <span class="text-muted">29</span>
+                                        <span class="text-muted">30</span>
+                                        <span class="text-muted">31</span>
+                                        <span data-time="9:02 AM">1</span>
+                                        <span class="present" data-time="8:58 AM">2</span>
+                                        <span class="holiday">3</span>
+
+                                        <!-- Week 2 -->
+                                        <span class="holiday">4</span>
+                                        <span class="present" data-time="9:00 AM">5</span>
+                                        <span class="present" data-time="8:55 AM">6</span>
+                                        <span class="absent">7</span>
+                                        <span class="present" data-time="9:05 AM">8</span>
+                                        <span class="late" data-time="9:32 AM">9</span>
+                                        <span class="holiday">10</span>
+
+                                        <!-- Week3 -->
+                                        <span class="holiday">11</span>
+                                        <span class="present" data-time="9:00 AM">12</span>
+                                        <span class="present" data-time="8:55 AM">13</span>
+                                        <span class="absent">14</span>
+                                        <span class="present" data-time="9:05 AM">15</span>
+                                        <span class="late" data-time="9:32 AM">16</span>
+                                        <span class="holiday">17</span>
+
+                                        <!-- Week4 -->
+                                        <span class="holiday">18</span>
+                                        <span class="present" data-time="9:00 AM">19</span>
+                                        <span class="present" data-time="8:55 AM">20</span>
+                                        <span class="absent">21</span>
+                                        <span class="present" data-time="9:05 AM">22</span>
+                                        <span class="late" data-time="9:32 AM">23</span>
+                                        <span class="holiday">24</span>
+
+                                        <!-- Week5 -->
+                                        <span class="holiday">25</span>
+                                        <span class="present" data-time="9:00 AM">26</span>
+                                        <span class="present" data-time="8:55 AM">27</span>
+                                        <span class="absent">28</span>
+                                        <span class="present" data-time="9:05 AM">29</span>
+                                        <span class="holiday">30</span>
+                                    </div>
+
+                                </div>
+
+                                <!-- Calendar Legend -->
+                                <div class="calendar-legend mt-4">
+                                    <div class="d-flex flex-wrap gap-3 justify-content-center">
+                                        <span class="legend-item">
+                                            <span class="dot present"></span> Present
+                                        </span>
+                                        <span class="legend-item">
+                                            <span class="dot absent"></span> Absent
+                                        </span>
+                                        <span class="legend-item">
+                                            <span class="dot late"></span> Late
+                                        </span>
+                                        <span class="legend-item">
+                                            <span class="dot holiday"></span> Holiday
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Today's Status -->
+                                <div class="today-status mt-4 p-3 bg-light rounded">
+                                    <h6 class="mb-3">Today's Status</h6>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <p class="mb-1"><i class="ti ti-login text-success me-2"></i>Check In: 9:00 AM</p>
+                                            <p class="mb-0"><i class="ti ti-logout text-danger me-2"></i>Check Out: 6:00 PM</p>
+                                        </div>
+                                        <span class="badge bg-success">On Time</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+            ];
+            
+            let currentDate = new Date();
+            let currentMonth = currentDate.getMonth();
+            let currentYear = currentDate.getFullYear();
+
+            // Sample attendance data - Replace with API call in production
+            const attendanceData = {
+                "2024-02-01": { status: "present", time: "9:02 AM" },
+                "2024-02-02": { status: "present", time: "8:58 AM" },
+                "2024-02-03": { status: "holiday", time: null, reason: "Weekend" },
+                "2024-02-04": { status: "holiday", time: null, reason: "Weekend" },
+                "2024-02-05": { status: "present", time: "9:00 AM" },
+                "2024-02-06": { status: "present", time: "8:55 AM" },
+                "2024-02-07": { status: "absent", time: null, reason: "Sick Leave" },
+                "2024-02-08": { status: "present", time: "9:05 AM" },
+                "2024-02-09": { status: "late", time: "9:32 AM" },
+                "2024-02-10": { status: "holiday", time: null, reason: "Weekend" },
+                "2024-02-11": { status: "holiday", time: null, reason: "Weekend" },
+                "2024-02-12": { status: "present", time: "8:58 AM" },
+                // Add more dates as needed
+            };
+
+            function isWeekend(date) {
+                const day = date.getDay();
+                return day === 0 || day === 6;
+            }
+
+            function isPublicHoliday(dateString) {
+                const holidays = {
+                    "2024-01-26": "Republic Day",
+                    "2024-03-25": "Holi",
+                    "2024-08-15": "Independence Day",
+                    "2024-10-02": "Gandhi Jayanti",
+                    // Add more holidays
+                };
+                return holidays[dateString];
+            }
+
+            function updateCalendar() {
+                const firstDay = new Date(currentYear, currentMonth, 1);
+                const lastDay = new Date(currentYear, currentMonth + 1, 0);
+                const totalDays = lastDay.getDate();
+                const startingDay = firstDay.getDay();
+
+                // Update month and year display
+                document.querySelector('.month-display').textContent = monthNames[currentMonth];
+                document.querySelector('.year-select').value = currentYear;
+
+                let calendarHTML = '';
+                let presentCount = 0;
+                let absentCount = 0;
+                let lateCount = 0;
+
+                // Add empty cells for days before the first day of month
+                for (let i = 0; i < startingDay; i++) {
+                    calendarHTML += '<span class="text-muted"></span>';
+                }
+
+                // Add days
+                for (let i = 1; i <= totalDays; i++) {
+                    const currentDateString = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                    const dateToCheck = new Date(currentYear, currentMonth, i);
+                    let dayClass = '';
+                    let timeData = '';
+                    let tooltipData = '';
+
+                    if (attendanceData[currentDateString]) {
+                        const data = attendanceData[currentDateString];
+                        dayClass = data.status;
+                        if (data.time) {
+                            timeData = `data-time="${data.time}"`;
+                            tooltipData = `title="${data.time}"`;
+                        }
+                        if (data.reason) {
+                            tooltipData = `title="${data.reason}"`;
+                        }
+
+                        // Update counters
+                        switch(data.status) {
+                            case 'present': presentCount++; break;
+                            case 'absent': absentCount++; break;
+                            case 'late': lateCount++; break;
+                        }
+                    } else if (isWeekend(dateToCheck)) {
+                        dayClass = 'holiday';
+                        tooltipData = `title="Weekend"`;
+                    } else if (isPublicHoliday(currentDateString)) {
+                        dayClass = 'holiday';
+                        tooltipData = `title="${isPublicHoliday(currentDateString)}"`;
+                    }
+
+                    if (i === currentDate.getDate() && currentMonth === currentDate.getMonth() && currentYear === currentDate.getFullYear()) {
+                        dayClass += ' current-day';
+                    }
+
+                    calendarHTML += `<span class="${dayClass}" ${timeData} ${tooltipData}>${i}</span>`;
+                }
+
+                document.querySelector('.calendar-grid').innerHTML = calendarHTML;
+
+                // Update attendance summary
+                document.querySelector('.text-success').textContent = presentCount;
+                document.querySelector('.text-danger').textContent = absentCount;
+
+                // Initialize tooltips
+                const tooltips = document.querySelectorAll('[title]');
+                tooltips.forEach(el => {
+                    new bootstrap.Tooltip(el);
+                });
+            }
+
+            // Event listeners for month navigation
+            document.querySelectorAll('.month-selector button').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (this.querySelector('.ti-chevron-left')) {
+                        currentMonth--;
+                        if (currentMonth < 0) {
+                            currentMonth = 11;
+                            currentYear--;
+                        }
+                    } else {
+                        currentMonth++;
+                        if (currentMonth > 11) {
+                            currentMonth = 0;
+                            currentYear++;
+                        }
+                    }
+                    updateCalendar();
+                });
+            });
+
+            // Year select event listener
+            document.querySelector('.year-select').addEventListener('change', function() {
+                currentYear = parseInt(this.value);
+                updateCalendar();
+            });
+
+            // Initialize calendar
+            updateCalendar();
+        });
+    </script>
+</body>
+</html>
