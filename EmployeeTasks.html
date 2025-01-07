@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Dashboard</title>
+    <link rel="stylesheet" href="try.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        .stat-card {
+            border-left: 4px solid;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card.active {
+            border-color: #28a745;
+        }
+
+        .stat-card.pending {
+            border-color: #ffc107;
+        }
+
+        .stat-card.expired {
+            border-color: #dc3545;
+        }
+
+        .stat-card.draft {
+            border-color: #6c757d;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+
+        .sidebar {
+            background: #ffffff;
+            padding: 20px;
+            min-height: 100vh;
+            border-right: 1px solid #e0e0e0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 70px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+            overflow-x: hidden;
+        }
+
+        .sidebar.active {
+            width: 280px;
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 999;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            color: #007bff;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .close-btn:hover {
+            color: #007bff;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 3rem;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 9px;
+            text-decoration: none;
+            color: #666;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .sidebar-item:hover {
+            background: #f8f9fa;
+            color: #007bff;
+        }
+
+        .sidebar-item i {
+            font-size: 1.2rem;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .sidebar-item span {
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            /* margin-left: 10px; */
+        }
+
+        .sidebar.active .sidebar-item span {
+            opacity: 1;
+        }
+
+        /* Optional: Add active state */
+        .sidebar-item.active {
+            background: #e8f0fe;
+            color: #007bff;
+        }
+
+        .table-responsive {
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        .icon-container {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .icon-container i {
+            color: #007bff;
+            font-size: 1.4rem;
+        }
+
+        svg {
+        fill: #007bff; /* Change the icon color */
+        }
+
+        .simple-icon-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .simple-icon-btn:hover i {
+            color: #0056b3;
+        }
+
+        .modal-dialog {
+            display: flex;
+            align-items: center;
+            min-height: calc(100% - 1rem);
+        }
+
+        .modal-content {
+            width: 100%;
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-dialog.modal-dialog-centered {
+            max-width: 500px;
+            margin: 1.75rem auto;
+            padding: 1rem;
+        }
+
+        Add these table styling rules
+        .table > :not(caption) > * > * {
+            padding: 1rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .table tbody tr {
+            margin: 1rem 0;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            white-space: nowrap;
+        }
+
+        /* Optional: Add hover effect */
+        .table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Make the checkbox container centered */
+        td input[type="checkbox"] {
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Add overlay styles */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Adjust main content margin */
+        .col.py-3 {
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.active + .col.py-3 {
+            margin-left: 280px;
+        }
+
+        /* Hide close button by default */
+        .close-btn {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.active .close-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .hover-row {
+            transition: background-color 0.2s ease;
+        }
+
+        .hover-row:hover {
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .form-check-input {
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .container-fluid {
+                font-size: 0.9rem;
+            }
+            
+            .btn {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .row {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+            
+            .col, .col-1 {
+                min-width: 120px;
+            }
+        }
+
+        /* Grid border styles */
+        .grid-header {
+            border: 1px solid #dee2e6;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+
+        .grid-row {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin-bottom: 0;
+        }
+
+        .grid-row + .grid-row {
+            border-top: none;
+            border-radius: 0;
+        }
+
+        .grid-row:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+
+        .row.py-3 {
+            padding-top: 0.75rem !important;
+            padding-bottom: 0.75rem !important;
+        }
+
+        /* Add container styles */
+        .container-fluid.px-4 {
+            padding: 0;
+        }
+
+        /* Add this style to center the checkbox */
+        td input[type="checkbox"] {
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Alternative approach using flexbox */
+        .col-1 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-check-input {
+            margin: 0;
+            border: 2px solid #666;  /* Thicker border */
+            width: 1.2rem;          /* Slightly larger size */
+            height: 1.2rem;
+        }
+
+        /* Optional: Style the checked state */
+        .form-check-input:checked {
+            border-color: #0d6efd;  /* Bootstrap primary color */
+            background-color: #0d6efd;
+        }
+
+        /* Hover effect */
+        .form-check-input:hover {
+            border-color: #0d6efd;
+        }
+
+        /* Profile dropdown styles */
+        .dropdown-menu {
+            padding: 0.5rem 0;
+            border: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            min-width: 200px;
+        }
+
+        .dropdown-item {
+            padding: 0.6rem 1rem;
+            display: flex;
+            align-items: center;
+            color: #666;
+            transition: all 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: #007bff;
+        }
+
+        .dropdown-item i {
+            font-size: 1.1rem;
+        }
+
+        .dropdown-divider {
+            margin: 0.5rem 0;
+            border-color: #eee;
+        }
+
+        /* Update avatar styles */
+        .avatar {
+            width: 35px;
+            height: 35px;
+            background-color: #f8f9fa;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        /* Profile button styles */
+        #profileDropdown {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: #f8f9fa;
+            transition: all 0.2s ease;
+        }
+
+        #profileDropdown:hover {
+            background: #e9ecef;
+        }
+
+        /* Remove dropdown arrow */
+        .dropdown-toggle::after {
+            display: none !important;
+        }
+
+        /* Add hover effect for clickable card */
+        .stat-card.draft:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Ensure text color stays consistent */
+        a .stat-card .card-subtitle {
+            color: #6c757d !important;
+        }
+
+        a .stat-card .card-title {
+            color: #212529 !important;
+        }
+
+        /* Modal styles */
+        .modal-content {
+            border: none;
+            border-radius: 8px;
+        }
+
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #dee2e6;
+        }
+
+        .modal-body p.text-muted {
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .modal-body h6 {
+            margin-bottom: 0;
+        }
+
+        /* Make modal slightly larger */
+        .modal-dialog.modal-lg {
+            max-width: 800px;
+        }
+
+        /* Status select styling */
+        .status-select {
+            width: auto;
+            min-width: 120px;
+        }
+
+        .status-select option[value="not-started"] {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            font-weight: bold;
+        }
+
+        .status-select option[value="in-progress"] {
+            background-color: #fff3cd;
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        .status-select option[value="completed"] {
+            background-color: #d4edda;
+            color: #198754;
+            font-weight: bold;
+        }
+
+        .status-select option[value="stopped"] {
+            background-color: #f8d7da;
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .status-select {
+            /* padding: 8px 12px; */
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .status-select option {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 6px;
+        }
+
+        .not-started-option {
+            background-color: #f8f9fa;
+            color: #6c757d;
+        }
+
+        .in-progress-option {
+            background-color: #fff3cd;
+            color: #997404;
+        }
+
+        .completed-option {
+            background-color: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .stopped-option {
+            background-color: #f8d7da;
+            color: #842029;
+        }
+
+        .stopwatch {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .time {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #495057;
+        }
+        /* Add spacing between rows */
+        .row.py-3.mb-3 {
+            margin-bottom: 1rem !important;
+        }
+
+        /* Enhance form controls */
+        .form-control-sm {
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+            transition: all 0.2s;
+        }
+
+        .form-control-sm:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Main Content -->
+            <div class="col py-3">
+
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Tasks</h2>
+
+                    <div class="dropdown">
+                        <button class="btn btn-light" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar me-2">
+                                    <i class="ti ti-user"></i>
+                                </div>
+                                <h6 class="mb-0">Rupali Sharma</h6>
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="ti ti-user me-2"></i>Profile
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#">
+                                    <i class="ti ti-settings me-2"></i>Settings
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="#">
+                                    <i class="ti ti-logout me-2"></i>Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card stat-card active">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Completed Tasks</h6>
+                                <h2 class="card-title mb-0">265</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card pending">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Pending Tasks</h6>
+                                <h2 class="card-title mb-0">42</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card stat-card expired">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Rejected Tasks</h6>
+                                <h2 class="card-title mb-0">12</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="EmployeeLogin.html" class="text-decoration-none">
+                            <div class="card stat-card draft" style="cursor: pointer;">
+                                <div class="card-body">
+                                    <h6 class="card-subtitle mb-2 text-muted">Alloted Time</h6>
+                                    <h2 class="card-title mb-0">22</h2>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="row mb-4">
+                    <div class="col">
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="Search contracts...">
+                            <button class="btn btn-outline-secondary" type="button">
+                                <i class="ti ti-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <button class="btn btn-outline-secondary">
+                            <i class="ti ti-filter"></i> Filter
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contract Table -->
+                <div class="container-fluid px-4">
+                    <div class="row bg-light py-3 rounded">
+                        <div class="col-1 fw-bold">S.No</div>
+                        <div class="col fw-bold">Task</div>
+                        <div class="col fw-bold">Task Type</div>
+                        <div class="col fw-bold">Date Alloted</div>
+                        <div class="col fw-bold">Time Alloted</div>
+                        <div class="col fw-bold">Time Taken</div>
+                        <div class="col fw-bold">Status</div>
+                        <div class="col fw-bold">Remark</div>
+                    </div>
+
+                    <!-- Table Row 1 -->
+                    <div class="row py-3 align-items-center">
+                        <div class="col-1">1</div>
+                        <div class="col">Video Editing</div>
+                        <div class="col">Creative</div>
+                        <div class="col">8-1-25</div>
+                        <div class="col">1 hour</div>
+                        <div class="col">
+                            <div class="stopwatch">
+                                <span class="time">00:00:00</span>
+                                <!-- <div class="stopwatch-controls">
+                                    <button class="btn btn-sm btn-outline-primary start-btn"><i class="ti ti-player-play"></i></button>
+                                    <button class="btn btn-sm btn-outline-danger stop-btn" disabled><i class="ti ti-player-pause"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary reset-btn" disabled><i class="ti ti-refresh"></i></button>
+                                </div> -->
+                            </div>
+                        </div>
+                        <div class="col">
+                            <select class="form-select status-select">
+                                <option value="not-started" class="not-started-option">⭘ Not Started</option>
+                                <option value="in-progress" class="in-progress-option">► In Progress</option>
+                                <option value="completed" class="completed-option">✓ Completed</option>
+                                <option value="stopped" class="stopped-option">■ Stopped</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control form-control-sm" placeholder="Add remark..." value="">
+                        </div>
+                    </div>
+
+                    <!-- Table Row 2 -->
+                    <div class="row py-3 align-items-center">
+                        <div class="col-1">2</div>
+                        <div class="col">Content Writing</div>
+                        <div class="col">Content</div>
+                        <div class="col">7-1-25</div>
+                        <div class="col">2 hour</div>
+                        <div class="col">
+                            <div class="stopwatch">
+                                <span class="time">00:00:00</span>
+                                <!-- <div class="stopwatch-controls">
+                                    <button class="btn btn-sm btn-outline-primary start-btn"><i class="ti ti-player-play"></i></button>
+                                    <button class="btn btn-sm btn-outline-danger stop-btn" disabled><i class="ti ti-player-pause"></i></button>
+                                    <button class="btn btn-sm btn-outline-secondary reset-btn" disabled><i class="ti ti-refresh"></i></button>
+                                </div> -->
+                            </div>
+                        </div>
+                        <div class="col">
+                            <select class="form-select status-select">
+                                <option value="not-started" class="not-started-option">⭘ Not Started</option>
+                                <option value="in-progress" class="in-progress-option" selected>► In Progress</option>
+                                <option value="completed" class="completed-option">✓ Completed</option>
+                                <option value="stopped" class="stopped-option">■ Stopped</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <input type="text" class="form-control form-control-sm" placeholder="Add remark..." value="">
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="viewListingModal" tabindex="-1" aria-labelledby="viewListingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="viewListingModalLabel">Listing Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted">Contract ID</p>
+                            <h6>#CT001</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted">Position</p>
+                            <h6>Senior UI/UX Designer</h6>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted">Employee Name</p>
+                            <h6>Sarah Johnson</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted">Location</p>
+                            <h6>Delhi</h6>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted">Experience</p>
+                            <h6>2 Years</h6>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1 text-muted">Salary</p>
+                            <h6>$85,000</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <p class="mb-1 text-muted">Status</p>
+                            <span class="status-badge bg-success">Active</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Edit Details</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.querySelectorAll('.status-select').forEach(select => {
+        // Set initial color
+        updateSelectColor(select);
+
+        // Update color on change
+        select.addEventListener('change', function() {
+            updateSelectColor(this);
+        });
+    });
+
+    function updateSelectColor(select) {
+        const value = select.value;
+        select.className = 'form-select form-select-sm status-select';
+        
+        switch(value) {
+            case 'not-started':
+                select.style.color = '#6c757d';
+                select.style.fontWeight = 'bold';
+                select.style.backgroundColor = '#f8f9fa';
+                select.style.borderColor = '#6c757d';
+                break;
+            case 'in-progress':
+                select.style.color = '#ffc107';
+                select.style.fontWeight = 'bold';
+                select.style.backgroundColor = '#fff3cd';
+                select.style.borderColor = '#ffc107';
+                break;
+            case 'completed':
+                select.style.color = '#198754';
+                select.style.fontWeight = 'bold';
+                select.style.backgroundColor = '#d4edda';
+                select.style.borderColor = '#198754';
+                break;
+            case 'stopped':
+                select.style.color = '#dc3545';
+                select.style.fontWeight = 'bold';
+                select.style.backgroundColor = '#f8d7da';
+                select.style.borderColor = '#dc3545';
+                break;
+        }
+    }
+
+    class Stopwatch {
+        constructor(displayElement, startBtn, stopBtn, resetBtn) {
+            this.displayElement = displayElement;
+            this.startBtn = startBtn;
+            this.stopBtn = stopBtn;
+            this.resetBtn = resetBtn;
+            this.running = false;
+            this.time = 0;
+            this.interval = null;
+
+            this.startBtn.addEventListener('click', () => this.start());
+            this.stopBtn.addEventListener('click', () => this.stop());
+            this.resetBtn.addEventListener('click', () => this.reset());
+        }
+
+        start() {
+            if (!this.running) {
+                this.running = true;
+                this.interval = setInterval(() => {
+                    this.time++;
+                    this.updateDisplay();
+                }, 1000);
+                this.startBtn.disabled = true;
+                this.stopBtn.disabled = false;
+                this.resetBtn.disabled = false;
+            }
+        }
+
+        stop() {
+            if (this.running) {
+                this.running = false;
+                clearInterval(this.interval);
+                this.startBtn.disabled = false;
+                this.stopBtn.disabled = true;
+            }
+        }
+
+        reset() {
+            this.time = 0;
+            this.updateDisplay();
+            this.resetBtn.disabled = true;
+        }
+
+        updateDisplay() {
+            const hours = Math.floor(this.time / 3600);
+            const minutes = Math.floor((this.time % 3600) / 60);
+            const seconds = this.time % 60;
+            this.displayElement.textContent = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+    }
+
+    // Initialize stopwatches
+    document.querySelectorAll('.stopwatch').forEach(stopwatchElement => {
+        const display = stopwatchElement.querySelector('.time');
+        const startBtn = stopwatchElement.querySelector('.start-btn');
+        const stopBtn = stopwatchElement.querySelector('.stop-btn');
+        const resetBtn = stopwatchElement.querySelector('.reset-btn');
+        new Stopwatch(display, startBtn, stopBtn, resetBtn);
+    });
+    </script>
+</body>
+</html>
